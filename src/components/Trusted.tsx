@@ -1,5 +1,3 @@
-import React from "react";
-
 const Trusted = () => {
   const companies = [
     { name: "TechCorp", logo: "🏢" },

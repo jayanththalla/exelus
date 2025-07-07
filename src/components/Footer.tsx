@@ -1,5 +1,4 @@
-import React from "react";
-import { Facebook, Direct, Sms, Call } from "iconsax-react";
+import { Facebook, Sms, Call } from "iconsax-react";
 import { FaTwitter, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
