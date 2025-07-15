@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 
-const Loader = ({ onFinish }) => {
+interface LoaderProps {
+  onFinish?: () => void;
+}
+
+const Loader = ({ onFinish }: LoaderProps) => {
   const [showText, setShowText] = useState(false);
 
   useEffect(() => {
