@@ -72,7 +72,16 @@ const Hero = () => {
         >
           Transforming Ideas Into
           <br />
-          <span style={{ color: "#BBE1FAB2" }}>
+          <span
+            style={{
+              background: "linear-gradient(90deg, #3282B8 0%, #BBE1FA 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              color: "#3282B8",
+              fontWeight: 600, // optional, bold for visibility
+            }}
+          >
             {displayText}
             <span className="animate-pulse">|</span>
           </span>
