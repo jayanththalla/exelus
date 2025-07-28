@@ -4,3 +4,4 @@ build/
 # Ignore dependencies
 node_modules/
 # Ignore node_modules directory
+.env
