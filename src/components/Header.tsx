@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import QuoteForm from "./QuoteForm";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isQuoteFormOpen, setIsQuoteFormOpen] = useState(false);
 
   // Handle scroll effect for header
   useEffect(() => {
@@ -71,7 +73,10 @@ const Header = () => {
 
           {/* Action buttons */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <button className="px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 text-xs sm:text-sm md:text-base rounded-lg bg-[#3282B8] text-white hover:bg-gradient-to-r hover:from-[#3282B8] hover:to-[#BBE1FA] transition-all duration-300 ease-in-out shadow-md hover:shadow-lg whitespace-nowrap">
+            <button 
+              onClick={() => setIsQuoteFormOpen(true)}
+              className="px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 text-xs sm:text-sm md:text-base rounded-lg bg-[#3282B8] text-white hover:bg-gradient-to-r hover:from-[#3282B8] hover:to-[#BBE1FA] transition-all duration-300 ease-in-out shadow-md hover:shadow-lg whitespace-nowrap"
+            >
               Get Quote
             </button>
 
@@ -136,6 +141,11 @@ const Header = () => {
           </nav>
         </div>
       </div>
+      
+      <QuoteForm 
+        isOpen={isQuoteFormOpen} 
+        onClose={() => setIsQuoteFormOpen(false)} 
+      />
     </header>
   );
 };

@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import QuoteForm from "./QuoteForm";
 
 const Hero = () => {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const [isQuoteFormOpen, setIsQuoteFormOpen] = useState(false);
   const targetText = "Digital Solutions";
   const typingSpeed = 100; // milliseconds
   const heroRef = useRef(null);
@@ -219,7 +221,10 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
         >
-          <button className="px-6 sm:px-8 py-2 sm:py-3 rounded-lg transition-all duration-300 flex items-center justify-center border-2 border-[#3282B8] bg-[#BFFFFF] text-[#222] font-semibold hover:bg-transparent hover:text-[#BFFFFF] hover:shadow-lg hover:shadow-[#3282B8]/30">
+          <button 
+            onClick={() => setIsQuoteFormOpen(true)}
+            className="px-6 sm:px-8 py-2 sm:py-3 rounded-lg transition-all duration-300 flex items-center justify-center border-2 border-[#3282B8] bg-[#BFFFFF] text-[#222] font-semibold hover:bg-transparent hover:text-[#BFFFFF] hover:shadow-lg hover:shadow-[#3282B8]/30"
+          >
             Get Free Quote{" "}
             <span className="ml-2 group-hover:translate-x-1 transition-transform">
               →
@@ -290,6 +295,11 @@ const Hero = () => {
           </motion.div>
         </button>
       </motion.div>
+      
+      <QuoteForm 
+        isOpen={isQuoteFormOpen} 
+        onClose={() => setIsQuoteFormOpen(false)} 
+      />
     </section>
   );
 };
