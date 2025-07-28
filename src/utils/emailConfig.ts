@@ -3,7 +3,7 @@
 
 export const EMAIL_CONFIG = {
   // Get these from your EmailJS dashboard
-  SERVICE_ID: 'service_exelus', // Replace with your EmailJS service ID
+  SERVICE_ID: 'service_ey1ovz2', // Replace with your EmailJS service ID
   TEMPLATE_ID: 'template_quote', // Replace with your EmailJS template ID
   AUTO_REPLY_TEMPLATE_ID: 'template_auto_reply', // Replace with your auto-reply template ID
   PUBLIC_KEY: 'your_public_key', // Replace with your EmailJS public key
