@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X, Upload, Send } from 'lucide-react';
+import { useState } from "react";
+import { X, Upload, Send } from "lucide-react";
 
 interface QuoteFormProps {
   isOpen: boolean;
@@ -22,94 +22,106 @@ interface FormData {
 
 const QuoteForm = ({ isOpen, onClose }: QuoteFormProps) => {
   const [formData, setFormData] = useState<FormData>({
-    fullName: '',
-    companyName: '',
-    email: '',
-    phone: '',
+    fullName: "",
+    companyName: "",
+    email: "",
+    phone: "",
     serviceType: [],
-    otherService: '',
-    projectDescription: '',
-    budgetRange: '',
-    startDate: '',
-    timeframe: '',
-    files: []
+    otherService: "",
+    projectDescription: "",
+    budgetRange: "",
+    startDate: "",
+    timeframe: "",
+    files: [],
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const serviceOptions = [
-    'Web Development',
-    'Mobile App Development',
-    'UI/UX Design',
-    'Software Development',
-    'IT Consulting',
-    'Cloud Solutions',
-    'Digital Marketing',
-    'Other'
+    "Web Development",
+    "Mobile App Development",
+    "UI/UX Design",
+    "Software Development",
+    "IT Consulting",
+    "Cloud Solutions",
+    "Digital Marketing",
+    "Other",
   ];
 
   const budgetOptions = [
-    '<$1,000',
-    '$1,000 – $5,000',
-    '$5,000 – $10,000',
-    '$10,000+'
+    "<$1,000",
+    "$1,000 – $5,000",
+    "$5,000 – $10,000",
+    "$10,000+",
   ];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleServiceTypeChange = (service: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       serviceType: prev.serviceType.includes(service)
-        ? prev.serviceType.filter(s => s !== service)
-        : [...prev.serviceType, service]
+        ? prev.serviceType.filter((s) => s !== service)
+        : [...prev.serviceType, service],
     }));
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const maxSize = 10 * 1024 * 1024; // 10MB
-    const validFiles = files.filter(file => file.size <= maxSize);
-    
+    const validFiles = files.filter((file) => file.size <= maxSize);
+
     if (validFiles.length !== files.length) {
-      alert('Some files were too large (max 10MB each) and were not added.');
+      alert("Some files were too large (max 10MB each) and were not added.");
     }
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      files: [...prev.files, ...validFiles]
+      files: [...prev.files, ...validFiles],
     }));
   };
 
   const removeFile = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      files: prev.files.filter((_, i) => i !== index)
+      files: prev.files.filter((_, i) => i !== index),
     }));
   };
 
   const validateForm = () => {
-    if (!formData.fullName.trim()) return 'Full name is required';
-    if (!formData.email.trim()) return 'Email address is required';
-    if (!formData.email.includes('@') || !formData.email.includes('.')) return 'Please enter a valid email address';
-    if (formData.serviceType.length === 0) return 'Please select at least one service type';
-    if (!formData.projectDescription.trim()) return 'Project description is required';
-    if (formData.serviceType.includes('Other') && !formData.otherService.trim()) {
-      return 'Please specify the other service type';
+    if (!formData.fullName.trim()) return "Full name is required";
+    if (!formData.email.trim()) return "Email address is required";
+    if (!formData.email.includes("@") || !formData.email.includes("."))
+      return "Please enter a valid email address";
+    if (formData.serviceType.length === 0)
+      return "Please select at least one service type";
+    if (!formData.projectDescription.trim())
+      return "Project description is required";
+    if (
+      formData.serviceType.includes("Other") &&
+      !formData.otherService.trim()
+    ) {
+      return "Please specify the other service type";
     }
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const validationError = validateForm();
     if (validationError) {
       alert(validationError);
@@ -117,81 +129,95 @@ const QuoteForm = ({ isOpen, onClose }: QuoteFormProps) => {
     }
 
     setIsSubmitting(true);
-    setSubmitStatus('idle');
+    setSubmitStatus("idle");
 
     try {
       // Create FormData for file upload
       const submitFormData = new FormData();
-      
+
       // Add form fields
-      submitFormData.append('fullName', formData.fullName);
-      submitFormData.append('companyName', formData.companyName);
-      submitFormData.append('email', formData.email);
-      submitFormData.append('phone', formData.phone);
-      submitFormData.append('serviceType', JSON.stringify(formData.serviceType));
-      submitFormData.append('otherService', formData.otherService);
-      submitFormData.append('projectDescription', formData.projectDescription);
-      submitFormData.append('budgetRange', formData.budgetRange);
-      submitFormData.append('startDate', formData.startDate);
-      submitFormData.append('timeframe', formData.timeframe);
-      
+      submitFormData.append("fullName", formData.fullName);
+      submitFormData.append("companyName", formData.companyName);
+      submitFormData.append("email", formData.email);
+      submitFormData.append("phone", formData.phone);
+      submitFormData.append(
+        "serviceType",
+        JSON.stringify(formData.serviceType)
+      );
+      submitFormData.append("otherService", formData.otherService);
+      submitFormData.append("projectDescription", formData.projectDescription);
+      submitFormData.append("budgetRange", formData.budgetRange);
+      submitFormData.append("startDate", formData.startDate);
+      submitFormData.append("timeframe", formData.timeframe);
+
       // Add files
       formData.files.forEach((file) => {
-        submitFormData.append('files', file);
+        submitFormData.append("files", file);
       });
 
       // Submit to server
-      const response = await fetch('/api/submit-quote', {
-        method: 'POST',
-        body: submitFormData
-      });
+      const response = await fetch(
+        "https://exelusinfotech.onrender.com/api/submit-quote",
+        {
+          method: "POST",
+          body: submitFormData,
+        }
+      );
 
       const result = await response.json();
 
       if (result.success) {
-        setSubmitStatus('success');
+        setSubmitStatus("success");
         // Close form after 3 seconds
         setTimeout(() => {
           onClose();
           resetForm();
         }, 3000);
       } else {
-        throw new Error(result.message || 'Failed to submit quote request');
+        throw new Error(result.message || "Failed to submit quote request");
       }
-
     } catch (error) {
-      console.error('Error submitting quote request:', error);
-      setSubmitStatus('error');
-      
+      console.error("Error submitting quote request:", error);
+      setSubmitStatus("error");
+
       // Fallback: try to open email client
-      const subject = encodeURIComponent('Quote Request from ' + formData.fullName);
-      const services = formData.serviceType.includes('Other') 
-        ? [...formData.serviceType.filter(s => s !== 'Other'), formData.otherService].join(', ')
-        : formData.serviceType.join(', ');
-      
+      const subject = encodeURIComponent(
+        "Quote Request from " + formData.fullName
+      );
+      const services = formData.serviceType.includes("Other")
+        ? [
+            ...formData.serviceType.filter((s) => s !== "Other"),
+            formData.otherService,
+          ].join(", ")
+        : formData.serviceType.join(", ");
+
       const body = encodeURIComponent(`
 NEW QUOTE REQUEST
 
 Client Information:
 - Name: ${formData.fullName}
-- Company: ${formData.companyName || 'Not provided'}
+- Company: ${formData.companyName || "Not provided"}
 - Email: ${formData.email}
-- Phone: ${formData.phone || 'Not provided'}
+- Phone: ${formData.phone || "Not provided"}
 
 Project Details:
 - Services: ${services}
 - Description: ${formData.projectDescription}
-- Budget: ${formData.budgetRange || 'Not specified'}
-- Start Date: ${formData.startDate || 'Not specified'}
-- Timeframe: ${formData.timeframe || 'Not specified'}
+- Budget: ${formData.budgetRange || "Not specified"}
+- Start Date: ${formData.startDate || "Not specified"}
+- Timeframe: ${formData.timeframe || "Not specified"}
 - Files: ${formData.files.length} file(s) attached
 
 Submitted: ${new Date().toLocaleString()}
       `);
-      
+
       const mailtoLink = `mailto:info@exelusinfotech.com?subject=${subject}&body=${body}`;
-      
-      if (confirm('Server is temporarily unavailable. Would you like to open your email client instead?')) {
+
+      if (
+        confirm(
+          "Server is temporarily unavailable. Would you like to open your email client instead?"
+        )
+      ) {
         window.open(mailtoLink);
         onClose();
         resetForm();
@@ -203,19 +229,19 @@ Submitted: ${new Date().toLocaleString()}
 
   const resetForm = () => {
     setFormData({
-      fullName: '',
-      companyName: '',
-      email: '',
-      phone: '',
+      fullName: "",
+      companyName: "",
+      email: "",
+      phone: "",
       serviceType: [],
-      otherService: '',
-      projectDescription: '',
-      budgetRange: '',
-      startDate: '',
-      timeframe: '',
-      files: []
+      otherService: "",
+      projectDescription: "",
+      budgetRange: "",
+      startDate: "",
+      timeframe: "",
+      files: [],
     });
-    setSubmitStatus('idle');
+    setSubmitStatus("idle");
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -227,7 +253,7 @@ Submitted: ${new Date().toLocaleString()}
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4 overflow-y-auto"
       onClick={handleBackdropClick}
     >
@@ -249,8 +275,10 @@ Submitted: ${new Date().toLocaleString()}
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Client Information */}
             <div>
-              <h3 className="text-lg font-semibold text-[#3282B8] mb-4">Client Information</h3>
-              
+              <h3 className="text-lg font-semibold text-[#3282B8] mb-4">
+                Client Information
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[#BBE1FA] text-sm font-medium mb-2">
@@ -298,7 +326,8 @@ Submitted: ${new Date().toLocaleString()}
 
                 <div>
                   <label className="block text-[#BBE1FA] text-sm font-medium mb-2">
-                    Phone Number <span className="text-gray-400 text-xs">(Recommended)</span>
+                    Phone Number{" "}
+                    <span className="text-gray-400 text-xs">(Recommended)</span>
                   </label>
                   <input
                     type="tel"
@@ -319,27 +348,33 @@ Submitted: ${new Date().toLocaleString()}
                 Project Details
                 <span className="ml-2">🔹</span>
               </h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-[#BBE1FA] text-sm font-medium mb-2">
-                    Type of Service Needed <span className="text-red-400">*</span>
+                    Type of Service Needed{" "}
+                    <span className="text-red-400">*</span>
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {serviceOptions.map((service) => (
-                      <label key={service} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-slate-700 transition-colors">
+                      <label
+                        key={service}
+                        className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-slate-700 transition-colors"
+                      >
                         <input
                           type="checkbox"
                           checked={formData.serviceType.includes(service)}
                           onChange={() => handleServiceTypeChange(service)}
                           className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
                         />
-                        <span className="text-[#BBE1FAB2] text-sm">{service}</span>
+                        <span className="text-[#BBE1FAB2] text-sm">
+                          {service}
+                        </span>
                       </label>
                     ))}
                   </div>
-                  
-                  {formData.serviceType.includes('Other') && (
+
+                  {formData.serviceType.includes("Other") && (
                     <input
                       type="text"
                       name="otherService"
@@ -370,7 +405,10 @@ Submitted: ${new Date().toLocaleString()}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[#BBE1FA] text-sm font-medium mb-2">
-                      Budget Range <span className="text-gray-400 text-xs">(Optional but helpful)</span>
+                      Budget Range{" "}
+                      <span className="text-gray-400 text-xs">
+                        (Optional but helpful)
+                      </span>
                     </label>
                     <select
                       name="budgetRange"
@@ -380,21 +418,24 @@ Submitted: ${new Date().toLocaleString()}
                     >
                       <option value="">Select budget range</option>
                       {budgetOptions.map((budget) => (
-                        <option key={budget} value={budget}>{budget}</option>
+                        <option key={budget} value={budget}>
+                          {budget}
+                        </option>
                       ))}
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-[#BBE1FA] text-sm font-medium mb-2">
-                      Expected Start Date <span className="text-gray-400 text-xs">(Optional)</span>
+                      Expected Start Date{" "}
+                      <span className="text-gray-400 text-xs">(Optional)</span>
                     </label>
                     <input
                       type="date"
                       name="startDate"
                       value={formData.startDate}
                       onChange={handleInputChange}
-                      min={new Date().toISOString().split('T')[0]}
+                      min={new Date().toISOString().split("T")[0]}
                       className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
@@ -402,7 +443,8 @@ Submitted: ${new Date().toLocaleString()}
 
                 <div>
                   <label className="block text-[#BBE1FA] text-sm font-medium mb-2">
-                    Timeframe for Completion <span className="text-gray-400 text-xs">(Optional)</span>
+                    Timeframe for Completion{" "}
+                    <span className="text-gray-400 text-xs">(Optional)</span>
                   </label>
                   <input
                     type="text"
@@ -417,7 +459,8 @@ Submitted: ${new Date().toLocaleString()}
                 {/* File Upload */}
                 <div>
                   <label className="block text-[#BBE1FA] text-sm font-medium mb-2">
-                    Upload Documents or Briefs <span className="text-gray-400 text-xs">(Optional)</span>
+                    Upload Documents or Briefs{" "}
+                    <span className="text-gray-400 text-xs">(Optional)</span>
                   </label>
                   <div className="border-2 border-dashed border-slate-600 rounded-lg p-4 text-center hover:border-slate-500 transition-colors">
                     <input
@@ -442,9 +485,13 @@ Submitted: ${new Date().toLocaleString()}
                   {formData.files.length > 0 && (
                     <div className="mt-2 space-y-1">
                       {formData.files.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between bg-slate-700 px-3 py-2 rounded">
+                        <div
+                          key={index}
+                          className="flex items-center justify-between bg-slate-700 px-3 py-2 rounded"
+                        >
                           <span className="text-[#BBE1FAB2] text-sm truncate mr-2">
-                            {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                            {file.name} ({(file.size / 1024 / 1024).toFixed(2)}{" "}
+                            MB)
                           </span>
                           <button
                             type="button"
@@ -462,17 +509,27 @@ Submitted: ${new Date().toLocaleString()}
             </div>
 
             {/* Status Messages */}
-            {submitStatus === 'success' && (
+            {submitStatus === "success" && (
               <div className="bg-green-600 text-white p-4 rounded-lg text-center">
-                <div className="font-semibold mb-1">Quote request sent successfully! ✅</div>
-                <div className="text-sm">We'll get back to you within 24 hours. Check your email for confirmation.</div>
+                <div className="font-semibold mb-1">
+                  Quote request sent successfully! ✅
+                </div>
+                <div className="text-sm">
+                  We'll get back to you within 24 hours. Check your email for
+                  confirmation.
+                </div>
               </div>
             )}
-            
-            {submitStatus === 'error' && (
+
+            {submitStatus === "error" && (
               <div className="bg-red-600 text-white p-4 rounded-lg text-center">
-                <div className="font-semibold mb-1">Failed to send quote request ❌</div>
-                <div className="text-sm">Please try again or contact us directly at info@exelusinfotech.com</div>
+                <div className="font-semibold mb-1">
+                  Failed to send quote request ❌
+                </div>
+                <div className="text-sm">
+                  Please try again or contact us directly at
+                  info@exelusinfotech.com
+                </div>
               </div>
             )}
           </form>
