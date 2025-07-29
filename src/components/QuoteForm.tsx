@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { X, Upload, Send } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 
 interface QuoteFormProps {
   isOpen: boolean;
@@ -108,50 +107,6 @@ const QuoteForm = ({ isOpen, onClose }: QuoteFormProps) => {
     return null;
   };
 
-  const formatEmailContent = (data: FormData) => {
-    const services = data.serviceType.includes('Other') 
-      ? [...data.serviceType.filter(s => s !== 'Other'), data.otherService].join(', ')
-      : data.serviceType.join(', ');
-
-    return `
-NEW QUOTE REQUEST FROM EXELUS INFOTECH WEBSITE
-
-═══════════════════════════════════════
-CLIENT INFORMATION
-═══════════════════════════════════════
-Full Name: ${data.fullName}
-Company: ${data.companyName || 'Not provided'}
-Email: ${data.email}
-Phone: ${data.phone || 'Not provided'}
-
-═══════════════════════════════════════
-PROJECT DETAILS
-═══════════════════════════════════════
-Services Needed: ${services}
-Project Description: 
-${data.projectDescription}
-
-Budget Range: ${data.budgetRange || 'Not specified'}
-Expected Start Date: ${data.startDate || 'Not specified'}
-Timeframe: ${data.timeframe || 'Not specified'}
-Files Attached: ${data.files.length} file(s)
-
-═══════════════════════════════════════
-FILES INFORMATION
-═══════════════════════════════════════
-${data.files.length > 0 
-  ? data.files.map((file, index) => `${index + 1}. ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`).join('\n')
-  : 'No files attached'
-}
-
-═══════════════════════════════════════
-SUBMISSION DETAILS
-═══════════════════════════════════════
-Submitted: ${new Date().toLocaleString()}
-Source: Exelus InfoTech Website Quote Form
-    `.trim();
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -165,92 +120,78 @@ Source: Exelus InfoTech Website Quote Form
     setSubmitStatus('idle');
 
     try {
-      // Initialize EmailJS (you'll need to replace these with your actual IDs)
-      const serviceId = 'service_exelus'; // Replace with your EmailJS service ID
-      const templateId = 'template_quote'; // Replace with your EmailJS template ID
-      const publicKey = 'your_public_key'; // Replace with your EmailJS public key
-
-      // Prepare email data
-      const emailData = {
-        to_email: 'info@exelusinfotech.com', // Your business email
-        from_name: formData.fullName,
-        from_email: formData.email,
-        company_name: formData.companyName,
-        phone: formData.phone,
-        services: formData.serviceType.includes('Other') 
-          ? [...formData.serviceType.filter(s => s !== 'Other'), formData.otherService].join(', ')
-          : formData.serviceType.join(', '),
-        project_description: formData.projectDescription,
-        budget_range: formData.budgetRange,
-        start_date: formData.startDate,
-        timeframe: formData.timeframe,
-        files_count: formData.files.length,
-        files_info: formData.files.map(file => `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`).join(', '),
-        message: formatEmailContent(formData),
-        submission_date: new Date().toLocaleString()
-      };
-
-      // Send email using EmailJS
-      const result = await emailjs.send(
-        serviceId,
-        templateId,
-        emailData,
-        publicKey
-      );
-
-      console.log('Email sent successfully:', result);
+      // Create FormData for file upload
+      const submitFormData = new FormData();
       
-      // Send auto-reply to client
-      const autoReplyData = {
-        to_email: formData.email,
-        to_name: formData.fullName,
-        company_name: formData.companyName || 'your company',
-        services: emailData.services,
-        message: `Dear ${formData.fullName},
-
-Thank you for your interest in Exelus InfoTech! We have received your quote request for ${emailData.services}.
-
-Our team will review your requirements and get back to you within 24 hours with a detailed proposal.
-
-Project Summary:
-- Services: ${emailData.services}
-- Budget Range: ${formData.budgetRange || 'To be discussed'}
-- Expected Start: ${formData.startDate || 'To be discussed'}
-
-If you have any urgent questions, please don't hesitate to contact us at:
-📧 info@exelusinfotech.com
-📞 +91 70130 92021
-
-Best regards,
-The Exelus InfoTech Team`
-      };
-
-      // Send auto-reply (you'll need a separate template for this)
-      await emailjs.send(
-        serviceId,
-        'template_auto_reply', // Replace with your auto-reply template ID
-        autoReplyData,
-        publicKey
-      );
-
-      setSubmitStatus('success');
+      // Add form fields
+      submitFormData.append('fullName', formData.fullName);
+      submitFormData.append('companyName', formData.companyName);
+      submitFormData.append('email', formData.email);
+      submitFormData.append('phone', formData.phone);
+      submitFormData.append('serviceType', JSON.stringify(formData.serviceType));
+      submitFormData.append('otherService', formData.otherService);
+      submitFormData.append('projectDescription', formData.projectDescription);
+      submitFormData.append('budgetRange', formData.budgetRange);
+      submitFormData.append('startDate', formData.startDate);
+      submitFormData.append('timeframe', formData.timeframe);
       
-      // Close form after 3 seconds
-      setTimeout(() => {
-        onClose();
-        resetForm();
-      }, 3000);
+      // Add files
+      formData.files.forEach((file) => {
+        submitFormData.append('files', file);
+      });
+
+      // Submit to server
+      const response = await fetch('/api/submit-quote', {
+        method: 'POST',
+        body: submitFormData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus('success');
+        // Close form after 3 seconds
+        setTimeout(() => {
+          onClose();
+          resetForm();
+        }, 3000);
+      } else {
+        throw new Error(result.message || 'Failed to submit quote request');
+      }
 
     } catch (error) {
-      console.error('Error sending quote request:', error);
+      console.error('Error submitting quote request:', error);
       setSubmitStatus('error');
       
       // Fallback: try to open email client
       const subject = encodeURIComponent('Quote Request from ' + formData.fullName);
-      const body = encodeURIComponent(formatEmailContent(formData));
+      const services = formData.serviceType.includes('Other') 
+        ? [...formData.serviceType.filter(s => s !== 'Other'), formData.otherService].join(', ')
+        : formData.serviceType.join(', ');
+      
+      const body = encodeURIComponent(`
+NEW QUOTE REQUEST
+
+Client Information:
+- Name: ${formData.fullName}
+- Company: ${formData.companyName || 'Not provided'}
+- Email: ${formData.email}
+- Phone: ${formData.phone || 'Not provided'}
+
+Project Details:
+- Services: ${services}
+- Description: ${formData.projectDescription}
+- Budget: ${formData.budgetRange || 'Not specified'}
+- Start Date: ${formData.startDate || 'Not specified'}
+- Timeframe: ${formData.timeframe || 'Not specified'}
+- Files: ${formData.files.length} file(s) attached
+
+Submitted: ${new Date().toLocaleString()}
+      `);
+      
       const mailtoLink = `mailto:info@exelusinfotech.com?subject=${subject}&body=${body}`;
       
-      if (confirm('Email service is temporarily unavailable. Would you like to open your email client instead?')) {
+      if (confirm('Server is temporarily unavailable. Would you like to open your email client instead?')) {
         window.open(mailtoLink);
         onClose();
         resetForm();
@@ -290,7 +231,7 @@ The Exelus InfoTech Team`
       className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4 overflow-y-auto"
       onClick={handleBackdropClick}
     >
-      <div className="bg-slate-800 rounded-lg max-w-2xl w-full my-8 relative">
+      <div className="bg-slate-800 rounded-lg max-w-2xl w-full my-8 relative max-h-[90vh] flex flex-col">
         {/* Header - Sticky */}
         <div className="sticky top-0 bg-slate-800 border-b border-slate-700 p-6 flex items-center justify-between rounded-t-lg z-10">
           <h2 className="text-2xl font-bold text-[#BBE1FA]">Get Your Quote</h2>
@@ -304,7 +245,7 @@ The Exelus InfoTech Team`
         </div>
 
         {/* Form Content - Scrollable */}
-        <div className="max-h-[70vh] overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Client Information */}
             <div>

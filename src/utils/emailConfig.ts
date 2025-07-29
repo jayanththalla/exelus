@@ -1,13 +1,16 @@
-// EmailJS Configuration
-// Replace these with your actual EmailJS credentials
+// Server API Configuration
+// The form now submits to your custom server instead of EmailJS
 
-export const EMAIL_CONFIG = {
-  // Get these from your EmailJS dashboard
-  SERVICE_ID: 'service_ey1ovz2',               // ✅ Your EmailJS service ID
-  TEMPLATE_ID: 'template_quote',               // ✅ Template for sending quote to you
-  AUTO_REPLY_TEMPLATE_ID: 'template_auto_reply', // ✅ Template for auto-reply to client
-  PUBLIC_KEY: 'your_public_key',               // 🔑 Replace with your real public key
-
-  // Your business email (used as reply-to or fallback)
+export const API_CONFIG = {
+  // Your server endpoint
+  SUBMIT_QUOTE_URL: '/api/submit-quote',
+  
+  // Your business email (used as fallback)
   BUSINESS_EMAIL: 'info@exelusinfotech.com',
+  
+  // Server health check
+  HEALTH_CHECK_URL: '/api/health'
 };
+
+// Note: Email configuration is now handled server-side in the .env file
+// This provides better security and supports file attachments
