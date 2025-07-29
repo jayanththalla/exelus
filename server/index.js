@@ -54,7 +54,7 @@ const upload = multer({
 
 // Configure nodemailer
 const createTransporter = () => {
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     service: 'gmail', // You can change this to your email provider
     auth: {
       user: process.env.EMAIL_USER, // Your email
@@ -65,8 +65,8 @@ const createTransporter = () => {
 
 // Format email content
 const formatQuoteEmail = (formData, files) => {
-  const services = Array.isArray(formData.serviceType) 
-    ? formData.serviceType.join(', ') 
+  const services = Array.isArray(formData.serviceType)
+    ? formData.serviceType.join(', ')
     : formData.serviceType;
 
   return `
@@ -137,8 +137,8 @@ const formatQuoteEmail = (formData, files) => {
 
 // Format auto-reply email
 const formatAutoReplyEmail = (formData) => {
-  const services = Array.isArray(formData.serviceType) 
-    ? formData.serviceType.join(', ') 
+  const services = Array.isArray(formData.serviceType)
+    ? formData.serviceType.join(', ')
     : formData.serviceType;
 
   return `
@@ -281,7 +281,7 @@ app.post('/api/submit-quote', upload.array('files', 10), async (req, res) => {
 
   } catch (error) {
     console.error('Error processing quote request:', error);
-    
+
     // Clean up files if there was an error
     if (req.files) {
       req.files.forEach(file => {
@@ -301,8 +301,8 @@ app.post('/api/submit-quote', upload.array('files', 10), async (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     service: 'Exelus InfoTech Quote API'
   });
